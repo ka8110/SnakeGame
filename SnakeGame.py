@@ -88,6 +88,18 @@ class SNAKE:
             body_copy.insert(0, body_copy[0] + self.direction)
             self.body = body_copy[:]
  
+    def move_snake(self):
+        if self.new_block == True:
+            body_copy = self.body[:]
+            body_copy.insert(0, body_copy[0] + self.direction)
+            self.body = body_copy[:]
+            self.new_block = False
+        else:
+            body_copy = self.body[:-1]
+            body_copy.insert(0, body_copy[0] + self.direction)
+            self.body = body_copy[:]
+    
+ 
     def add_block(self):
         self.new_block = True
     
@@ -118,8 +130,9 @@ class MAIN:
     
     def update(self):
         self.snake.move_snake()
-        self.check_collision()
+        self.snake2.move_snake()
         self.check_fail()
+        self.check_fail2()
  
     def draw_elements(self):
         self.draw_grass()
@@ -141,6 +154,19 @@ class MAIN:
             if block == self.fruit.pos:
                 self.fruit.randomize()
     
+    def check_collision2(self):
+        if self.fruit.pos == self.snake2.body[0]:
+            self.fruit.randomize()
+            self.snake.add_block()
+ 
+        elif self.fruit2.pos == self.snake2.body[0]:
+            self.fruit2.randomize()
+            self.snake.add_block()
+ 
+        for block in self.snake2.body[1:]:
+            if block == self.fruit.pos:
+                self.fruit.randomize()
+ 
     def check_fail(self):
         if not 0 <= self.snake.body[0].x < cell_number or not 0 <= self.snake.body[0].y < cell_number:
             self.game_over()
@@ -149,8 +175,20 @@ class MAIN:
             if block == self.snake.body[0]:
                 self.game_over()
  
+    def check_fail2(self):
+        if not 0 <= self.snake2.body[0].x < cell_number or not 0 <= self.snake2.body[0].y < cell_number:
+            self.game_over2()
+        
+        for block in self.snake2.body[1:]:
+            if block == self.snake2.body[0]:
+                self.game_over2()
+    
+ 
     def game_over(self):
         self.snake.reset()
+ 
+    def game_over2(self):
+        self.snake2.reset()
  
     def draw_grass(grass):
         grass_color = (130, 209, 61)
@@ -169,13 +207,14 @@ class MAIN:
 pygame.init()
 cell_size = 40
 cell_number = 20
+FPS = 60
 screen = pygame.display.set_mode((cell_number * cell_size, cell_number * cell_size))
 clock = pygame.time.Clock()
 apple = pygame.image.load('Graphics/apple.png').convert_alpha()
 apple = pygame.transform.smoothscale(apple, (cell_size, cell_size))
  
 SCREEN_UPDATE = pygame.USEREVENT
-pygame.time.set_timer(SCREEN_UPDATE, 150)
+pygame.time.set_timer(SCREEN_UPDATE, 100)
  
 main_game = MAIN()
  
@@ -187,6 +226,7 @@ while True:
         if event.type == SCREEN_UPDATE:
             main_game.update()
         if event.type == pygame.KEYDOWN:
+            #player1
             if event.key == pygame.K_UP:
                 if main_game.snake.direction.y != 1:
                     main_game.snake.direction = Vector2(0,-1)
@@ -199,7 +239,7 @@ while True:
             if event.key == pygame.K_RIGHT:
                 if main_game.snake.direction.x != -1:
                     main_game.snake.direction = Vector2(1,0)
- 
+            #Player2
             if event.key == pygame.K_w:
                 if main_game.snake2.direction.y != 1:
                     main_game.snake2.direction = Vector2(0,-1)
@@ -218,7 +258,9 @@ while True:
     screen.fill((175,215,70))
     main_game.draw_elements()
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(FPS)
+ 
+ 
  
  
 
