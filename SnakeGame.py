@@ -2,11 +2,11 @@ import pygame, sys, random
 from pygame.math import Vector2
  
 class SNAKE:
-    def __init__(self):
-        self.body = [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
+    def __init__(self,position):
+        self.body = position
         self.direction = Vector2(0,0)
         self.new_block = False
- 
+     
         self.head_up = pygame.image.load('Graphics/head_up.png').convert_alpha()
         self.head_down = pygame.image.load('Graphics/head_down.png').convert_alpha()
         self.head_right = pygame.image.load('Graphics/head_right.png').convert_alpha()
@@ -87,19 +87,7 @@ class SNAKE:
             body_copy = self.body[:-1]
             body_copy.insert(0, body_copy[0] + self.direction)
             self.body = body_copy[:]
- 
-    def move_snake(self):
-        if self.new_block == True:
-            body_copy = self.body[:]
-            body_copy.insert(0, body_copy[0] + self.direction)
-            self.body = body_copy[:]
-            self.new_block = False
-        else:
-            body_copy = self.body[:-1]
-            body_copy.insert(0, body_copy[0] + self.direction)
-            self.body = body_copy[:]
     
- 
     def add_block(self):
         self.new_block = True
     
@@ -107,6 +95,9 @@ class SNAKE:
         self.body = [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
         self.direction = Vector2(0,0)
  
+    def reset2(self):
+        self.body = [Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)]
+        self.direction = Vector2(0,0)
 class FRUIT:
     def __init__(self):
         self.randomize()
@@ -123,8 +114,8 @@ class FRUIT:
  
 class MAIN:
     def __init__(self):
-        self.snake = SNAKE()
-        self.snake2 = SNAKE()
+        self.snake = SNAKE([Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)])
+        self.snake2 = SNAKE([Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)])
         self.fruit = FRUIT()
         self.fruit2 = FRUIT()
     
@@ -133,39 +124,33 @@ class MAIN:
         self.snake2.move_snake()
         self.check_fail()
         self.check_fail2()
- 
+        self.check_collision()
+        self.check_collision2()
+         
     def draw_elements(self):
         self.draw_grass()
         self.fruit.draw_fruit() 
         self.fruit2.draw_fruit()
         self.snake.draw_snake()
         self.snake2.draw_snake()
- 
+    
     def check_collision(self):
         if self.fruit.pos == self.snake.body[0]:
             self.fruit.randomize()
-            self.snake.add_block()
- 
-        elif self.fruit2.pos == self.snake.body[0]:
-            self.fruit2.randomize()
             self.snake.add_block()
  
         for block in self.snake.body[1:]:
             if block == self.fruit.pos:
                 self.fruit.randomize()
     
-    def check_collision2(self):
-        if self.fruit.pos == self.snake2.body[0]:
-            self.fruit.randomize()
-            self.snake.add_block()
- 
-        elif self.fruit2.pos == self.snake2.body[0]:
+    def check_collision2(self): 
+        if self.fruit2.pos == self.snake2.body[0]:
             self.fruit2.randomize()
-            self.snake.add_block()
+            self.snake2.add_block()
  
         for block in self.snake2.body[1:]:
-            if block == self.fruit.pos:
-                self.fruit.randomize()
+            if block == self.fruit2.pos:
+                self.fruit2.randomize()
  
     def check_fail(self):
         if not 0 <= self.snake.body[0].x < cell_number or not 0 <= self.snake.body[0].y < cell_number:
@@ -188,7 +173,7 @@ class MAIN:
         self.snake.reset()
  
     def game_over2(self):
-        self.snake2.reset()
+        self.snake2.reset2()
  
     def draw_grass(grass):
         grass_color = (130, 209, 61)
@@ -259,6 +244,8 @@ while True:
     main_game.draw_elements()
     pygame.display.update()
     clock.tick(FPS)
+ 
+ 
  
  
  
