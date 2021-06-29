@@ -1,8 +1,9 @@
 import pygame, sys, random
 from pygame.math import Vector2
  
-class SNAKE:
+class SNAKE(pygame.sprite.Sprite):
     def __init__(self,position):
+        super().__init__()
         self.body = position
         self.direction = Vector2(0,0)
         self.new_block = False
@@ -98,6 +99,7 @@ class SNAKE:
     def reset2(self):
         self.body = [Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)]
         self.direction = Vector2(0,0)
+        
 class FRUIT:
     def __init__(self):
         self.randomize()
@@ -105,7 +107,6 @@ class FRUIT:
     def draw_fruit(self):
         fruit_rect = pygame.Rect(int(self.pos.x * cell_size), int(self.pos.y * cell_size), cell_size, cell_size)
         screen.blit(apple, fruit_rect)
-        
     
     def randomize(self):
         self.x = random.randint(0, cell_number - 1)
@@ -126,6 +127,7 @@ class MAIN:
         self.check_fail2()
         self.check_collision()
         self.check_collision2()
+        self.check_snake()
          
     def draw_elements(self):
         self.draw_grass()
@@ -167,8 +169,17 @@ class MAIN:
         for block in self.snake2.body[1:]:
             if block == self.snake2.body[0]:
                 self.game_over2()
-    
  
+    def check_snake(self):
+        for block in self.snake2.body[:]:
+            if block == self.snake.body[0]:
+                self.game_over()
+ 
+        for block in self.snake.body[:]:
+            if block == self.snake2.body[0]:
+                self.game_over2()
+                               
+            
     def game_over(self):
         self.snake.reset()
  
@@ -199,8 +210,7 @@ apple = pygame.image.load('Graphics/apple.png').convert_alpha()
 apple = pygame.transform.smoothscale(apple, (cell_size, cell_size))
  
 SCREEN_UPDATE = pygame.USEREVENT
-pygame.time.set_timer(SCREEN_UPDATE, 100)
- 
+pygame.time.set_timer(SCREEN_UPDATE, 100) 
 main_game = MAIN()
  
 while True:
@@ -238,14 +248,10 @@ while True:
                 if main_game.snake2.direction.x != -1:
                     main_game.snake2.direction = Vector2(1,0)
  
- 
- 
     screen.fill((175,215,70))
     main_game.draw_elements()
     pygame.display.update()
     clock.tick(FPS)
- 
- 
  
  
  
