@@ -244,17 +244,16 @@ def main_menu():
         screen.fill((0,0,0))
         mx, my = pygame.mouse.get_pos()
  
-        button_rect = pygame.Rect(50, 200, 200, 50)
+        button_rect = pygame.Rect(0, 0, 200, 50)
         button_rect.center = (cell_number * cell_size / 2, cell_number * cell_size / 2)
         screen.blit(start, button_rect)
         
         if button_rect.collidepoint((mx, my)):
             if click:
                 game()
-
-
- 
+                
         click = False
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -286,29 +285,29 @@ def game():
                     running = False
                 
                 #player1
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_w:
                     if main_game.snake.direction.y != 1:
                         main_game.snake.direction = Vector2(0,-1)
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_s:
                     if main_game.snake.direction.y != -1:
                         main_game.snake.direction = Vector2(0,1)
-                if event.key == pygame.K_LEFT:
+                if event.key == pygame.K_a:
                     if main_game.snake.direction.x != 1:
                         main_game.snake.direction = Vector2(-1,0)
-                if event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_d:
                     if main_game.snake.direction.x != -1:
                         main_game.snake.direction = Vector2(1,0)
                 #Player2
-                if event.key == pygame.K_w:
+                if event.key == pygame.K_UP:
                     if main_game.snake2.direction.y != 1:
                         main_game.snake2.direction = Vector2(0,-1)
-                if event.key == pygame.K_s:
+                if event.key == pygame.K_DOWN:
                     if main_game.snake2.direction.y != -1:
                         main_game.snake2.direction = Vector2(0,1)
-                if event.key == pygame.K_a:
+                if event.key == pygame.K_LEFT:
                     if main_game.snake2.direction.x != 1:
                         main_game.snake2.direction = Vector2(-1,0)
-                if event.key == pygame.K_d:
+                if event.key == pygame.K_RIGHT:
                     if main_game.snake2.direction.x != -1:
                         main_game.snake2.direction = Vector2(1,0)
      
