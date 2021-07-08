@@ -1,14 +1,15 @@
-import pygame, sys, random #
-from pygame.math import Vector2
+import pygame, sys, random #imports pygame to make the game function, sys to help exit of the application and random to randomize the apple everytime it is eaten
+from pygame.math import Vector2 #imports vector2 to make it easier to store x,y values in a list.
  
-class SNAKE(pygame.sprite.Sprite):
+class SNAKE(pygame.sprite.Sprite): #Snake class to serve as templete for snake one and two.
     def __init__(self, position):
         super().__init__()
-        self.body = position
-        self.direction = Vector2(0,0)
-        self.new_block = False
+        self.body = position #Body is set as position so I can set any vector2 values in the main game class.
+        self.direction = Vector2(0,0) #Makes the snakes not move when staring
+        self.new_block = False #To make it so snake doesn't infinitly grow without even eating the apple yet.
         
-        self.head_up = pygame.image.load('Graphics/head_up.png').convert_alpha()
+        #Images for snake one, convert_alpha is to prevent any errors in the future.
+        self.head_up = pygame.image.load('Graphics/head_up.png').convert_alpha() 
         self.head_down = pygame.image.load('Graphics/head_down.png').convert_alpha()
         self.head_right = pygame.image.load('Graphics/head_right.png').convert_alpha()
         self.head_left = pygame.image.load('Graphics/head_left.png').convert_alpha()
@@ -26,81 +27,84 @@ class SNAKE(pygame.sprite.Sprite):
         self.body_br = pygame.image.load('Graphics/body_br.png').convert_alpha()
         self.body_bl = pygame.image.load('Graphics/body_bl.png').convert_alpha()
  
-    def draw_snake(self):
-        self.update_head_graphics()
-        self.update_tail_graphics()
+    def draw_snake(self): #Updates and draws the images on the surface depending on where the snake is looking
+        self.update_head_graphics() #function to make vector to 1 and 0 in x,y, this allows us to find the relation with the head and body
+        self.update_tail_graphics()#function to make vector to 1 and 0 in x,y, this allows us to find the relation with the tail and body
         
-        for index, block in enumerate(self.body):
-            x_pos = int(block.x * cell_size)
-            y_pos = int(block.y * cell_size)
-            block_rect = pygame.Rect(x_pos, y_pos, cell_size, cell_size)
+        for index, block in enumerate(self.body): #checkss the number of items in the list and each object inside.
+            
+            #This makes it so we can change x,y individually
+            x_pos = int(block.x * cell_size) #Set x_pos as cell_size
+            y_pos = int(block.y * cell_size) #set y_pos as cell_size
+            block_rect = pygame.Rect(x_pos, y_pos, cell_size, cell_size) #Makes a rectangle for the snake and sets it as the size of the cell
  
-            if index == 0:
-                screen.blit(self.head, block_rect)
-            elif index == len(self.body) -1:
-                screen.blit(self.tail, block_rect)
+            if index == 0: #Checks the first object in the list (Head)
+                screen.blit(self.head, block_rect) #Sets all the head images on the head
+            elif index == len(self.body) -1: #Gets all the elements in the list and goes the the last element to find the tail at all times.
+                screen.blit(self.tail, block_rect) #Sets all tail images as a tail
             else:
-                previous_block = self.body[index + 1] - block
+                previous_block = self.body[index + 1] - block 
                 next_block = self.body[index - 1] - block
-                if previous_block.x == next_block.x:
-                    screen.blit(self.body_vertical, block_rect)
-                elif previous_block.y == next_block.y:
-                    screen.blit(self.body_horizontal, block_rect)
+                if previous_block.x == next_block.x: #Checks if the x in the x,y coordinates are similar
+                    screen.blit(self.body_vertical, block_rect) #If x values are the same, it means it is not changing, therefore we can add a vertical body
+                elif previous_block.y == next_block.y: #Checks if the y in the x,y coordinates are similar
+                    screen.blit(self.body_horizontal, block_rect) #If y values are the same, it means it is not changing, therefore we can add a horizontal body
                 else:
-                    if previous_block.x == -1 and next_block.y == -1 or previous_block.y == -1 and next_block.x == -1:
-                        screen.blit(self.body_tl, block_rect)
-                    elif previous_block.x == 1 and next_block.y == -1 or previous_block.y == -1 and next_block.x == 1:
-                        screen.blit(self.body_tr, block_rect)
-                    elif previous_block.x == -1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == -1:
-                        screen.blit(self.body_bl, block_rect)
-                    elif previous_block.x == 1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == 1:
-                        screen.blit(self.body_br, block_rect)
+                    #Checks if the blocks before and after it to determine where to place a corner block
+                    if previous_block.x == -1 and next_block.y == -1 or previous_block.y == -1 and next_block.x == -1: #Checks if previous and next blocks are on top and left
+                        screen.blit(self.body_tl, block_rect) #If true it is, place rect with corner image to match the movement of snake
+                    elif previous_block.x == 1 and next_block.y == -1 or previous_block.y == -1 and next_block.x == 1: #Checks if previous and next blocks are on top and right
+                        screen.blit(self.body_tr, block_rect) #If true it is, place rect with corner image to match the movement of snake
+                    elif previous_block.x == -1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == -1: #Checks if previous and next blocks are on bottom and left
+                        screen.blit(self.body_bl, block_rect) #If true it is, place rect with corner image to match the movement of snake
+                    elif previous_block.x == 1 and next_block.y == 1 or previous_block.y == 1 and next_block.x == 1: #Checks if previous and next blocks are on bottom and right
+                        screen.blit(self.body_br, block_rect) #If true it is, place rect with corner image to match the movement of snake
  
-    def update_head_graphics(self):
-        head_relation = self.body[1] - self.body[0]
-        if head_relation == Vector2(1, 0): 
-            self.head = self.head_left
-        elif head_relation == Vector2(-1, 0): 
-            self.head = self.head_right
-        elif head_relation == Vector2(0, 1): 
-            self.head = self.head_up
-        elif head_relation == Vector2(0, -1): 
-            self.head = self.head_down
+    def update_head_graphics(self): #Finds relation with head and body to use for images
+        head_relation = self.body[1] - self.body[0] #Head relation will equal the element before the head subtracted by the head value.
+        if head_relation == Vector2(1, 0): #If it equals 1,0 than execute command under
+            self.head = self.head_left #Head will be looking at the left
+        elif head_relation == Vector2(-1, 0): #If it equals -1,0 than execute command under
+            self.head = self.head_right #Head will be looking at the right
+        elif head_relation == Vector2(0, 1): #If it equals 0,1 than execute command under
+            self.head = self.head_up #Head will be looking up
+        elif head_relation == Vector2(0, -1): #If it equals 0,-1 than execute command under
+            self.head = self.head_down #Head will be looking down
  
-    def update_tail_graphics(self):
-        tail_relation = self.body[-2] - self.body[-1]
-        if tail_relation == Vector2(1, 0): 
-            self.tail = self.tail_left
-        elif tail_relation == Vector2(-1, 0): 
-            self.tail = self.tail_right
-        elif tail_relation == Vector2(0, 1): 
-            self.tail = self.tail_up
-        elif tail_relation == Vector2(0, -1): 
-            self.tail = self.tail_down
+    def update_tail_graphics(self): #Finds relation with tail and body to use for images
+        tail_relation = self.body[-2] - self.body[-1] #tail relation will equal the element after the tail subtracted by the tail value.
+        if tail_relation == Vector2(1, 0): #If it equals 1,0 than execute command under
+            self.tail = self.tail_left #Tail will look to the left
+        elif tail_relation == Vector2(-1, 0): #If it equals -1,0 than execute command under
+            self.tail = self.tail_right #Tail will look to the right
+        elif tail_relation == Vector2(0, 1): #If it equals 0,1 than execute command under
+            self.tail = self.tail_up #Tail will look up
+        elif tail_relation == Vector2(0, -1): #If it equals 0,-1 than execute command under
+            self.tail = self.tail_down #Tail will look down
  
-    def move_snake(self):
-        if self.new_block == True:
-            body_copy = self.body[:]
-            body_copy.insert(0, body_copy[0] + self.direction)
-            self.body = body_copy[:]
-            self.new_block = False
-        else:
+    def move_snake(self): #Inserts new block in list whenever it eats an apple
+        if self.new_block == True: #When ever the new_block is True, execute the command under
+            body_copy = self.body[:] #Set a new variable that stores the list of the body
+            body_copy.insert(0, body_copy[0] + self.direction) #Insert a new block at the start of the list
+            self.body = body_copy[:] #Set the body as the whole of the body_copy to essentially return a new list
+            self.new_block = False #Sets as False so doesn't infinitly loop, growing super long
+        else: 
             body_copy = self.body[:-1]
             body_copy.insert(0, body_copy[0] + self.direction)
             self.body = body_copy[:]
     
-    def add_block(self):
-        self.new_block = True
+    def add_block(self): #Makes a function for new_block
+        self.new_block = True #New_block is True
     
-    def reset(self):   
-        self.body = [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]
-        self.direction = Vector2(0,0)
+    def reset(self): #When original snake dies, it will reset with these values set
+        self.body = [Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)] #sets the length and location of snake
+        self.direction = Vector2(0,0) #makes snake not move at start of respawn
  
-    def reset2(self):
-        self.body = [Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)]
-        self.direction = Vector2(0,0)
+    def reset2(self): #When second snake dies, it will reset with these values set
+        self.body = [Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)] sets the length and location of snake
+        self.direction = Vector2(0,0) #makes snake not move at start of respawn
         
-class FRUIT:
+class FRUIT: #Fruit class to create and set inputs for apples, also it will randomizde each time it collides with snake
     def __init__(self, image):
         self.randomize()
         self.image = pygame.image.load(image).convert_alpha()
