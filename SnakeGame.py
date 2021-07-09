@@ -101,7 +101,7 @@ class SNAKE(pygame.sprite.Sprite): #Snake class to serve as templete for snake o
         self.direction = Vector2(0,0) #makes snake not move at start of respawn
  
     def reset2(self): #When second snake dies, it will reset with these values set
-        self.body = [Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)] sets the length and location of snake
+        self.body = [Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)] #sets the length and location of snake
         self.direction = Vector2(0,0) #makes snake not move at start of respawn
         
 class FRUIT: #Fruit class to create and set inputs for apples, also it will randomizde each time it collides with snake
@@ -120,92 +120,92 @@ class FRUIT: #Fruit class to create and set inputs for apples, also it will rand
  
 class MAIN: #Main class where the snake and apple comes together
     def __init__(self): #Initializes fruit snake and second image of snake
-        self.snake = SNAKE([Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]) #
-        self.snake2 = SNAKE([Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)])
-        self.fruit = FRUIT('Graphics/apple.png')
-        self.fruit2 = FRUIT('Graphics/apple_2.png')
-        self.change_color()
+        self.snake = SNAKE([Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]) #Original snake takes in different x,y value to start in different place and set length
+        self.snake2 = SNAKE([Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)])#Second snake takes in different x,y value to start in different place and set length
+        self.fruit = FRUIT('Graphics/apple.png') #Sets fruit class to take in different apple image
+        self.fruit2 = FRUIT('Graphics/apple_2.png') #Sets fruit class to take in different apple image
+        self.change_color() #Second snake function to take in new images to change color
                           
-    def update(self):
-        self.snake.move_snake()
-        self.snake2.move_snake()
-        self.check_fail()
-        self.check_fail2()
-        self.check_collision()
-        self.check_collision2()
-        self.check_snake()
+    def update(self): #updates the collision and movement of snake and apple in the while loop
+        self.snake.move_snake() #Move snake function placed in update 
+        self.snake2.move_snake() #Move second snake function place in update 
+        self.check_fail() #Checks original snake collision against the boundaries of the game and if it hits itself
+        self.check_fail2() #Checks second snake collision against the boundaries of the game and if it hits itself
+        self.check_collision() #Checks if the snake is colliding with the original apple
+        self.check_collision2() #Checks if the second snake is collidiing with the second apple
+        self.check_snake() #Checks which of the two snakes are colliding with eatchother
          
-    def draw_elements(self):
-        self.draw_grass()
-        self.fruit.draw_fruit() 
-        self.fruit2.draw_fruit()
-        self.snake.draw_snake()
-        self.snake2.draw_snake()
+    def draw_elements(self): #Draws the green tiles of the game, snake and fruit
+        self.draw_grass() #The grass of the game is made of rectangles  so it needs to be drawn
+        self.fruit.draw_fruit() #Draws the fruit rectangle 
+        self.fruit2.draw_fruit() #Draws the second fruit rectangle
+        self.snake.draw_snake() #Draws all the elements in the snake as a rectangle
+        self.snake2.draw_snake() #Draws all the elements in the second snake as a rectangle
     
-    def check_collision(self):
-        if self.fruit.pos == self.snake.body[0]:
-            self.fruit.randomize()
-            self.snake.add_block()
+    def check_collision(self): #Checks the collision of the snake against the walls of the game and randomzies when apple spawns on snake itself
+        if self.fruit.pos == self.snake.body[0]: #If the apple position is the same as a the snakes head it will initialize the randomizing function and add a new block in the snake list
+            self.fruit.randomize() #Randomizes apple position when the if statement is true
+            self.snake.add_block() #adds new block in snake list when the if statement is true
  
-        for block in self.snake.body[1:]:
-            if block == self.fruit.pos:
-                self.fruit.randomize()
+        for block in self.snake.body[1:]: #Takes all the values of the body and tail but not the head
+            if block == self.fruit.pos: #If the apple spawns on top of the snake that is not on the head it will randomize again
+                self.fruit.randomize() #Randomizes when if statement is true
     
-    def check_collision2(self): 
-        if self.fruit2.pos == self.snake2.body[0]:
-            self.fruit2.randomize()
-            self.snake2.add_block()
+    def check_collision2(self): #Checks the collision of the second snake against the walls of the game and randomzies when apple spawns on second snake itself
+        if self.fruit2.pos == self.snake2.body[0]: #If the apple position is the same as a the second snakes head it will initialize the randomizing function and add a new block in the second snake list
+            self.fruit2.randomize() #Randomizes apple position when the if statement is true
+            self.snake2.add_block() #adds new block in snake list when the if statement is true
  
-        for block in self.snake2.body[1:]:
-            if block == self.fruit2.pos:
-                self.fruit2.randomize()
+        for block in self.snake2.body[1:]: #Takes all the values of the body and tail but not the head
+            if block == self.fruit2.pos: #If the apple spawns on top of the second snake that is not on the head it will randomize again
+                self.fruit2.randomize() #Randomizes when if statement is true
  
-    def check_fail(self):
-        if not 0 <= self.snake.body[0].x < cell_number or not 0 <= self.snake.body[0].y < cell_number:
-            self.game_over()
+    def check_fail(self): #If the snake touches the boundaries or itself at any point and will game over itself
+        if not 0 <= self.snake.body[0].x < cell_number or not 0 <= self.snake.body[0].y < cell_number: #Checks is the head of the snake.body is toucing the x and y axis of the game it will set as true
+            self.game_over() #Snake will die and respawn
         
-        for block in self.snake.body[1:]:
-            if block == self.snake.body[0]:
-                self.game_over()
+        for block in self.snake.body[1:]: #Checks all the elements in the list except for the head
+            if block == self.snake.body[0]: #If the the list we checked is at any point the same position as the head it will game_over
+                self.game_over() #Snake will die and respawn snake
  
-    def check_fail2(self):
-        if not 0 <= self.snake2.body[0].x < cell_number or not 0 <= self.snake2.body[0].y < cell_number:
-            self.game_over2()
+    def check_fail2(self): #If the second snake touches the boundaries or itself at any point and will game over itself
+        if not 0 <= self.snake2.body[0].x < cell_number or not 0 <= self.snake2.body[0].y < cell_number: #Checks is the head of the second snake.body is toucing the x and y axis of the game it will set as true
+            self.game_over2() #Second snake will die and respawn
         
-        for block in self.snake2.body[1:]:
-            if block == self.snake2.body[0]:
-                self.game_over2()
+        for block in self.snake2.body[1:]: #Checks all the elements in the list except for the head
+            if block == self.snake2.body[0]: #If the the list we checked is at any point the same position as the head it will game_over
+                self.game_over2() #Second snake will die and respawn
  
-    def check_snake(self):
-        for block in self.snake2.body[:]:
-            if block == self.snake.body[0]:
-                self.game_over()
+    def check_snake(self): #Checks if the snakes are touching eachother
+        for block in self.snake2.body[:]: #Checks all the elements in the second snake
+            if block == self.snake.body[0]: #If the list is the same as the original snakes head it will kill the original snake
+                self.game_over() #Original snake will die
  
-        for block in self.snake.body[:]:
-            if block == self.snake2.body[0]:
-                self.game_over2()
+        for block in self.snake.body[:]: #Checks all the elements in the original snake
+            if block == self.snake2.body[0]: #If the list is the same as the second snakes head it will kill the second snake
+                self.game_over2() #Original second snake will die
                                
             
-    def game_over(self):
-        self.snake.reset()
+    def game_over(self): #When ever game_over is called it will reset the original snake
+        self.snake.reset() #Original snake resets its position and length
  
-    def game_over2(self):
-        self.snake2.reset2()
+    def game_over2(self): #When ever game_over2 is called it will reset the second snake
+        self.snake2.reset2() #Second snake resets its position and length
  
-    def draw_grass(grass):
-        grass_color = (130, 209, 61)
-        for row in range(cell_number):
-            if row % 2 == 0:
-                for col in range(cell_number):
-                    if col % 2 == 0:
-                        grass_rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
-                        pygame.draw.rect(screen, grass_color, grass_rect)
+    def draw_grass(grass): #Creates the grass of the game
+        grass_color = (130, 209, 61) #Sets the grass color to be different from the original screen color
+        for row in range(cell_number): #Checks the amount of cell numbers (20) for the row
+            if row % 2 == 0: #each number in the list will be divided and will find the remainder and checks if it is equal to 0
+                for col in range(cell_number): #Checks the amount of cell numbers (20) for the column
+                    if col % 2 == 0: #each number in the list will be divided and will find the remainder and checks if it is equal to 0
+                        grass_rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size) #This will create a checkered pattern that is then dislpayed by giving row and col the size of a cell and giving an x,y position
+                        pygame.draw.rect(screen, grass_color, grass_rect) #It then draws the them as rectangles
             else: 
-                for col in range(cell_number):
-                    if col % 2 != 0:
-                        grass_rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
+                for col in range(cell_number): #Checks the amount of cell numbers (20) for the row
+                    if col % 2 != 0: #If numbers are not divisible and is not equal to 0 it will make the if statement true
+                        grass_rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size) #
                         pygame.draw.rect(screen, grass_color, grass_rect)
-
+ 
     def change_color(self):
         self.snake2.head_up = pygame.image.load('Graphics/head_up_2.png').convert_alpha()
         self.snake2.head_down = pygame.image.load('Graphics/head_down_2.png').convert_alpha()
@@ -226,7 +226,7 @@ class MAIN: #Main class where the snake and apple comes together
         self.snake2.body_bl = pygame.image.load('Graphics/body_bl_2.png').convert_alpha()
         
         self.fruit2.apple_2 = pygame.image.load('Graphics/apple_2.png').convert_alpha()
-
+ 
          
 pygame.init()
 cell_size = 40
@@ -237,14 +237,14 @@ clock = pygame.time.Clock()
 apple = pygame.image.load('Graphics/apple.png').convert_alpha()
 start = pygame.image.load('Graphics/start.png').convert_alpha()
 start = pygame.transform.smoothscale(start, (200, 50))
-
+ 
 SCREEN_UPDATE = pygame.USEREVENT
 pygame.time.set_timer(SCREEN_UPDATE, 110) 
 main_game = MAIN()
-
+ 
 def main_menu():
     while True:
-
+ 
         screen.fill((0,0,0))
         mx, my = pygame.mouse.get_pos()
  
@@ -272,11 +272,11 @@ def main_menu():
  
         pygame.display.update()
         clock.tick(FPS)
-
+ 
 def game():
     running = True
     while running:
-
+ 
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -319,5 +319,8 @@ def game():
         main_game.draw_elements()
         pygame.display.update()
         clock.tick(FPS)
-
+ 
 main_menu()
+ 
+ 
+
