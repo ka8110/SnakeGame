@@ -105,22 +105,22 @@ class SNAKE(pygame.sprite.Sprite): #Snake class to serve as templete for snake o
         self.direction = Vector2(0,0) #makes snake not move at start of respawn
         
 class FRUIT: #Fruit class to create and set inputs for apples, also it will randomizde each time it collides with snake
-    def __init__(self, image):
-        self.randomize()
-        self.image = pygame.image.load(image).convert_alpha()
+    def __init__(self, image): #Initializes image and randomize function, also added second argument (image) to 
+        self.randomize() #Initializes the randomize function
+        self.image = pygame.image.load(image).convert_alpha() #Initializes a general code for both apple images
         
-    def draw_fruit(self):
-        fruit_rect = pygame.Rect(int(self.pos.x * cell_size), int(self.pos.y * cell_size), cell_size, cell_size)
-        screen.blit(self.image, fruit_rect)
+    def draw_fruit(self): #Function to draw rectangle and attach image on it
+        fruit_rect = pygame.Rect(int(self.pos.x * cell_size), int(self.pos.y * cell_size), cell_size, cell_size) #Makes apple the size of a cell and sets an x,y as a changeble variable so we can randomize it 
+        screen.blit(self.image, fruit_rect) #Sets a general image variable on a rect
     
-    def randomize(self):
-        self.x = random.randint(0, cell_number - 1)
-        self.y = random.randint(0, cell_number - 1)
-        self.pos = Vector2(self.x, self.y)
+    def randomize(self): #The randomizing function whenever it collids with snake
+        self.x = random.randint(0, cell_number - 1) #Creates a random position within the x range of the screen
+        self.y = random.randint(0, cell_number - 1)#Creates a random position within the y range of the screen
+        self.pos = Vector2(self.x, self.y) #Because we have a random x, y position, we set it as self.pos and use it when we draw the fruit to randomize its position
  
-class MAIN:
-    def __init__(self):
-        self.snake = SNAKE([Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)])
+class MAIN: #Main class where the snake and apple comes together
+    def __init__(self): #Initializes fruit snake and second image of snake
+        self.snake = SNAKE([Vector2(5, 10), Vector2(4, 10), Vector2(3, 10)]) #
         self.snake2 = SNAKE([Vector2(11, 10), Vector2(12, 10), Vector2(13, 10)])
         self.fruit = FRUIT('Graphics/apple.png')
         self.fruit2 = FRUIT('Graphics/apple_2.png')
