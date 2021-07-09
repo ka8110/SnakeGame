@@ -205,7 +205,7 @@ class MAIN: #Main class where the snake and apple comes together
                         grass_rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size) #This will create a checkered pattern that is then dislpayed by giving row and col the size of a cell and giving an x,y position
                         pygame.draw.rect(screen, grass_color, grass_rect) #It then draws the them as rectangles
  
-    def change_color(self): #Allows the second snake to have different images to have different color
+    def change_color(self): #Allows the second snake and apple to have different images to have different color
         self.snake2.head_up = pygame.image.load('Graphics/head_up_2.png').convert_alpha()
         self.snake2.head_down = pygame.image.load('Graphics/head_down_2.png').convert_alpha()
         self.snake2.head_right = pygame.image.load('Graphics/head_right_2.png').convert_alpha()
