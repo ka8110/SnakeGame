@@ -1,11 +1,10 @@
 import pygame, sys, random #imports pygame to make the game function, sys to help exit of the application and random to randomize the apple everytime it is eaten
 from pygame.math import Vector2 #imports vector2 to make it easier to store x,y values in a list.
  
-class SNAKE(pygame.sprite.Sprite): #Snake class to serve as templete for snake one and two.
+class SNAKE(): #Snake class to serve as templete for snake one and two.
     def __init__(self, position):
-        super().__init__()
         self.body = position #Body is set as position so I can set any vector2 values in the main game class.
-        self.direction = Vector2(0,0) #Makes the snakes not move when staring
+        self.direction = Vector2(0,0) #Makes the snakes not move when starting
         self.new_block = False #To make it so snake doesn't infinitly grow without even eating the apple yet.
         
         #Images for snake one, convert_alpha is to prevent any errors in the future.
@@ -43,8 +42,8 @@ class SNAKE(pygame.sprite.Sprite): #Snake class to serve as templete for snake o
             elif index == len(self.body) -1: #Gets all the elements in the list and goes the the last element to find the tail at all times.
                 screen.blit(self.tail, block_rect) #Sets all tail images as a tail
             else:
-                previous_block = self.body[index + 1] - block 
-                next_block = self.body[index - 1] - block
+                previous_block = self.body[index + 1] - block #Gets the current index of self.body previous to it so we + 1, then we - current block to find the relationship between the two
+                next_block = self.body[index - 1] - block #Gets the current index of self.body infront of it so we - 1, then we - current block to find the relationship between the two
                 if previous_block.x == next_block.x: #Checks if the x in the x,y coordinates are similar
                     screen.blit(self.body_vertical, block_rect) #If x values are the same, it means it is not changing, therefore we can add a vertical body
                 elif previous_block.y == next_block.y: #Checks if the y in the x,y coordinates are similar
@@ -85,13 +84,13 @@ class SNAKE(pygame.sprite.Sprite): #Snake class to serve as templete for snake o
     def move_snake(self): #Inserts new block in list whenever it eats an apple
         if self.new_block == True: #When ever the new_block is True, execute the command under
             body_copy = self.body[:] #Set a new variable that stores the list of the body
-            body_copy.insert(0, body_copy[0] + self.direction) #Insert a new block at the start of the list
-            self.body = body_copy[:] #Set the body as the whole of the body_copy to essentially return a new list
+            body_copy.insert(0, body_copy[0] + self.direction) #Inserts a new block at the start of the list and give direction so it moves the same direction
+            self.body = body_copy[:] #Returns the body_copy values back into the self.body value to not mess up the code
             self.new_block = False #Sets as False so doesn't infinitly loop, growing super long
         else: 
-            body_copy = self.body[:-1]
-            body_copy.insert(0, body_copy[0] + self.direction)
-            self.body = body_copy[:]
+            body_copy = self.body[:-1] #Copies everything in the list except for the last element
+            body_copy.insert(0, body_copy[0] + self.direction) #Inserts a new block at the start of the list and give direction so it moves the same direction
+            self.body = body_copy[:] #Returns the body_copy values back into the self.body value to not mess up the code
     
     def add_block(self): #Makes a function for new_block
         self.new_block = True #New_block is True
@@ -203,10 +202,10 @@ class MAIN: #Main class where the snake and apple comes together
             else: 
                 for col in range(cell_number): #Checks the amount of cell numbers (20) for the row
                     if col % 2 != 0: #If numbers are not divisible and is not equal to 0 it will make the if statement true
-                        grass_rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size) #
-                        pygame.draw.rect(screen, grass_color, grass_rect)
+                        grass_rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size) #This will create a checkered pattern that is then dislpayed by giving row and col the size of a cell and giving an x,y position
+                        pygame.draw.rect(screen, grass_color, grass_rect) #It then draws the them as rectangles
  
-    def change_color(self):
+    def change_color(self): #Allows the second snake to have different images to have different color
         self.snake2.head_up = pygame.image.load('Graphics/head_up_2.png').convert_alpha()
         self.snake2.head_down = pygame.image.load('Graphics/head_down_2.png').convert_alpha()
         self.snake2.head_right = pygame.image.load('Graphics/head_right_2.png').convert_alpha()
@@ -228,99 +227,95 @@ class MAIN: #Main class where the snake and apple comes together
         self.fruit2.apple_2 = pygame.image.load('Graphics/apple_2.png').convert_alpha()
  
          
-pygame.init()
-cell_size = 40
-cell_number = 20
-FPS = 60
-screen = pygame.display.set_mode((cell_number * cell_size, cell_number * cell_size))
-clock = pygame.time.Clock()
-apple = pygame.image.load('Graphics/apple.png').convert_alpha()
-start = pygame.image.load('Graphics/start.png').convert_alpha()
-start = pygame.transform.smoothscale(start, (200, 50))
+pygame.init() #Initializes the pygame module
+cell_size = 40 #The size of the cell would be 40px
+cell_number = 20 #The amount of cells in the screen in the x and y axis are 20
+FPS = 60 #Controls the framerate at which the speed of the main while loop moves at
+screen = pygame.display.set_mode((cell_number * cell_size, cell_number * cell_size)) #Sets the display to be 800x800px in height and width 
+clock = pygame.time.Clock() #Stors the Clock method as a variable
+apple = pygame.image.load('Graphics/apple.png').convert_alpha() #Loads an image for the original apple
+start = pygame.image.load('Graphics/start.png').convert_alpha() #Loads an image for the start button
+start = pygame.transform.smoothscale(start, (200, 50)) #Transforms the start button into any adjusted size
  
-SCREEN_UPDATE = pygame.USEREVENT
-pygame.time.set_timer(SCREEN_UPDATE, 110) 
-main_game = MAIN()
+SCREEN_UPDATE = pygame.USEREVENT #Sets the userevents as unchangable data
+pygame.time.set_timer(SCREEN_UPDATE, 110) #Sets the timer between each action the game with a delay of 110ms
+main_game = MAIN() #Sets the clas MAIN() into a variable main_game
  
-def main_menu():
-    while True:
+click = False #Sets the click to false so the user does not automatically start the game when it collides with the button, only when they click the button
+
+def main_menu(): #Main menu function
+    while True: #While loop to run until menu is false
  
-        screen.fill((0,0,0))
-        mx, my = pygame.mouse.get_pos()
+        screen.fill((0,0,0)) #Makes background color black
+        mx, my = pygame.mouse.get_pos() #Sets the user's mouse position x and y values into mx, my
  
-        button_rect = pygame.Rect(0, 0, 200, 50)
-        button_rect.center = (cell_number * cell_size / 2, cell_number * cell_size / 2)
-        screen.blit(start, button_rect)
+        button_rect = pygame.Rect(0, 0, 200, 50) #Makes a rectangle for the button
+        button_rect.center = (cell_number * cell_size / 2, cell_number * cell_size / 2) #Halves the screen to make it in the center, I used .center to make the changes happen to the middle of the rectangle and not the top left
+        screen.blit(start, button_rect) #sets the start image into the button_rect rectangle
         
-        if button_rect.collidepoint((mx, my)):
-            if click:
-                game()
+        if button_rect.collidepoint((mx, my)): #Checks if the mx, my values are colliding with the button
+            if click: #if previous if statement is true than this checks for clicks which initializes the game itself
+                game() #turns on the game itself
                 
-        click = False
+        click = False #Sets the click to false so the user does not automatically start the game when it collides with the button, only when they click the button
         
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    click = True
+        for event in pygame.event.get(): #Finds the events and places it in a list
+            if event.type == pygame.QUIT: #If the X button is clicked than it will bloce the game
+                pygame.quit() #Turns off the code
+                sys.exit() #Turns off the whole system
+            if event.type == pygame.KEYDOWN: #If the event is detecting a keyboard press it will set as true
+                if event.key == pygame.K_ESCAPE: #If previous statement is true and the user clicked ESC than it will exit the menu
+                    pygame.quit() #Turns off the code
+                    sys.exit() #Turns off the whole system
+            if event.type == pygame.MOUSEBUTTONDOWN: #Detects a button click
+                click = True #If previous statement detects a button than click is true, if the mouse is hovering the button than this will click into the game
  
-        pygame.display.update()
-        clock.tick(FPS)
+        pygame.display.update() #updates what is being displayed, via while loop.
+        clock.tick(FPS) #Sets how fast the loop is going every second (60)
  
-def game():
-    running = True
-    while running:
- 
-        
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+def game(): #The main game loop where the game runs
+    running = True #Sets running to true so the while loop will work only when it is true
+    while running: #While loop is true but can be false if the running variable is changed
+        for event in pygame.event.get(): #Makes a list of events
+            if event.type == pygame.QUIT: #If the X button is clicked than it will bloce the game
+                pygame.quit() #Turns off the code
+                sys.exit() #Turns off the whole system
             if event.type == SCREEN_UPDATE:
                 main_game.update()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    running = False
+            if event.type == pygame.KEYDOWN: #If the event is detecting a keyboard press it will set as true
+                if event.key == pygame.K_ESCAPE: #If previous statement is true and the user clicked ESC than it will exit the game into the menu
+                    running = False #Turning running into false turns off the game and brings it back into the menu screen
                 
                 #player1
-                if event.key == pygame.K_w:
-                    if main_game.snake.direction.y != 1:
-                        main_game.snake.direction = Vector2(0,-1)
-                if event.key == pygame.K_s:
-                    if main_game.snake.direction.y != -1:
-                        main_game.snake.direction = Vector2(0,1)
-                if event.key == pygame.K_a:
-                    if main_game.snake.direction.x != 1:
-                        main_game.snake.direction = Vector2(-1,0)
-                if event.key == pygame.K_d:
-                    if main_game.snake.direction.x != -1:
-                        main_game.snake.direction = Vector2(1,0)
+                if event.key == pygame.K_w: #If key is w than if statement is true
+                    if main_game.snake.direction.y != 1: #Check if snake is moving downwards, if it is not than it will set as true
+                        main_game.snake.direction = Vector2(0,-1) #If previous statement is true then it will move the snake upwards 
+                if event.key == pygame.K_s: #If key is s than if statement is true
+                    if main_game.snake.direction.y != -1: #Check if snake is moving upwards, if it is not than it will set as true
+                        main_game.snake.direction = Vector2(0,1) #If previous statement is true then it will move the snake downwards 
+                if event.key == pygame.K_a: #If key is a than if statement is true
+                    if main_game.snake.direction.x != 1: #Check if snake is moving right, if it is not than it will set as true
+                        main_game.snake.direction = Vector2(-1,0) #If previous statement is true then it will move the snake to the left 
+                if event.key == pygame.K_d: #If key is d than if statement is true
+                    if main_game.snake.direction.x != -1: #Check if snake is moving to the left, if it is not than it will set as true
+                        main_game.snake.direction = Vector2(1,0) #If previous statement is true then it will move the snake to the right 
                 #Player2
-                if event.key == pygame.K_UP:
-                    if main_game.snake2.direction.y != 1:
-                        main_game.snake2.direction = Vector2(0,-1)
-                if event.key == pygame.K_DOWN:
-                    if main_game.snake2.direction.y != -1:
-                        main_game.snake2.direction = Vector2(0,1)
-                if event.key == pygame.K_LEFT:
-                    if main_game.snake2.direction.x != 1:
-                        main_game.snake2.direction = Vector2(-1,0)
-                if event.key == pygame.K_RIGHT:
-                    if main_game.snake2.direction.x != -1:
-                        main_game.snake2.direction = Vector2(1,0)
+                if event.key == pygame.K_UP: #If key is ARROW UP than if statement is true
+                    if main_game.snake2.direction.y != 1: #Check if snake is moving downwards, if it is not than it will set as true
+                        main_game.snake2.direction = Vector2(0,-1) #If previous statement is true then it will move the snake upwards 
+                if event.key == pygame.K_DOWN: #If key is ARROW DOWN than if statement is true
+                    if main_game.snake2.direction.y != -1: #Check if snake is moving upwards, if it is not than it will set as true
+                        main_game.snake2.direction = Vector2(0,1) #If previous statement is true then it will move the snake downwards 
+                if event.key == pygame.K_LEFT: #If key is ARROW LEFT than if statement is true
+                    if main_game.snake2.direction.x != 1: #Check if snake is moving right, if it is not than it will set as true
+                        main_game.snake2.direction = Vector2(-1,0) #If previous statement is true then it will move the snake to the left 
+                if event.key == pygame.K_RIGHT: #If key is ARRPW RIGHT than if statement is true
+                    if main_game.snake2.direction.x != -1: #Check if snake is moving left, if it is not than it will set as true
+                        main_game.snake2.direction = Vector2(1,0) #If previous statement is true then it will move the snake to the right 
      
-        screen.fill((175,215,70))
-        main_game.draw_elements()
-        pygame.display.update()
-        clock.tick(FPS)
+        screen.fill((175,215,70)) #Fills the screen with a light green color
+        main_game.draw_elements() #Calls the MAIN() class then it draws the elements inside i t
+        pygame.display.update() #Updates the loop everytime to capture each change 
+        clock.tick(FPS) #Sets how fast the loop is going every second (60)
  
-main_menu()
- 
- 
-
+main_menu() #Calls the main_menu function so when you start the game, it would pop up with a menu first
